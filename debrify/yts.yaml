@@ -11,11 +11,18 @@ capabilities:
   imdb_search: true
   series_support: false
 
-# API endpoints - different for keyword and IMDB search
+# API endpoints - YTS officially moved base API from yts.mx to movies-api.accel.li
 api:
   urls:
-    keyword: "https://r.jina.ai/http://yts.mx/api/v2/list_movies.json"
-    imdb: "https://r.jina.ai/http://yts.mx/api/v2/movie_details.json"
+    keyword: "https://movies-api.accel.li/api/v2/list_movies.json"
+    imdb: "https://movies-api.accel.li/api/v2/movie_details.json"
+  fallback_urls:
+    keyword:
+      - "https://yts.lt/api/v2/list_movies.json"
+      - "https://yts.bz/api/v2/list_movies.json"
+    imdb:
+      - "https://yts.lt/api/v2/movie_details.json"
+      - "https://yts.bz/api/v2/movie_details.json"
 
 # Query parameters - different param names for each search type
 query_params:
@@ -33,10 +40,9 @@ extra_params:
 pagination:
   type: none
 
-# Response format - jina wrapped
+# Response format - direct JSON
 response_format:
-  type: jina_wrapped
-  extract_json: true
+  type: direct_json
   results_path:
     keyword: "data.movies"
     imdb: "data.movie"
@@ -89,7 +95,6 @@ settings:
     type: toggle
     label: "Enable YTS"
     default: true
-  # No max_results setting - fixed API limit
 
 # TV mode specific configuration
 tv_mode:

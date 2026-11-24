@@ -1,90 +1,43 @@
 name: Ferrite iOS Master Plugins
 author: kingbri & User
 sources:
-  - name: Torrent Search Worker
-    version: 1
-    minVersion: '0.7.2'
-    about: Search aggregator via Cloudflare Worker API.
-    website: https://torrent-search-worker.euangrimshaw.workers.dev
-    tags:
-      - name: Aggregator
-        color: '5856d6'
-    jsonParser:
-      searchUrl: "/api/search?q={query}"
-      results: results
-      title:
-        query: title
-      magnetLink:
-        query: magnetLink
-      size:
-        query: size
-      sl:
-        seeders: seeders
-        leechers: leechers
-      date:
-        query: date
-
-  - name: AnimeTosho
-    version: 6
+  - name: Knaben
+    version: 2
     minVersion: '0.6.4'
-    about: An aggregator of public trackers for Japanese media.
-    website: https://animetosho.org
+    about: Knaben torrent meta-search via HTML parsing.
+    website: https://knaben.org
     tags:
       - name: Reliable
         color: '34c759'
-      - name: Anime
-    rssParser:
-      rssUrl: https://feed.animetosho.org
-      searchUrl: "/api?q={query}"
-      items: item
-      magnetHash:
-        query: infohash
-        discriminator: name
-        attribute: value
-      magnetLink:
-        query: magnetUrl
-        discriminator: name
-        attribute: value
-      title:
-        query: title
-      size:
-        query: size
-        discriminator: name
-        attribute: value
-      sl:
-        seeders: seeders
-        leechers: leechers
-        discriminator: name
-        attribute: value
+      - name: General
     htmlParser:
-      searchUrl: "/search?q={query}"
-      rows: '#content .home_list_entry'
+      searchUrl: "/search/{query}/0/1/seeders"
+      rows: 'table.table-striped tbody tr'
       magnet:
-        query: '.links > a:nth-child(4)'
+        query: "a[href^='magnet:']"
         attribute: href
       title:
-        query: .link
+        query: 'td:nth-child(2) > a'
       size:
-        query: .size
+        query: 'td:nth-child(3)'
       sl:
-        combined: '.links > span:nth-child(5)'
-        attribute: title
-        seederRegex: 'Seeders:\s?(\d+)'
-        leecherRegex: 'Leechers:\s?(\d+)'
+        seeders: 'td:nth-child(5)'
+        leechers: 'td:nth-child(6)'
 
   - name: Nyaa
-    version: 6
+    version: 7
     minVersion: '0.6.4'
     about: The one stop shop for anime.
     website: https://nyaa.si
     tags:
       - name: Reliable
         color: '34c759'
+      - name: Anime
     htmlParser:
       searchUrl: "/?q={query}"
       rows: '.torrent-list tbody tr'
       magnet:
-        query: 'td:nth-child(3) > a:nth-child(2)'
+        query: "a[href^='magnet:']"
         attribute: href
       title:
         query: 'td:nth-child(2) > a:nth-last-child(1)'
@@ -94,14 +47,40 @@ sources:
         seeders: 'td:nth-child(6)'
         leechers: 'td:nth-child(7)'
 
-  - name: SolidTorrents
-    version: 1
+  - name: AnimeTosho
+    version: 7
     minVersion: '0.6.4'
-    about: Comprehensive torrent search via SolidTorrents API.
-    website: https://solidtorrents.to
+    about: An aggregator of public trackers for Japanese media.
+    website: https://animetosho.org
     tags:
       - name: Reliable
         color: '34c759'
+      - name: Anime
+    htmlParser:
+      searchUrl: "/search?q={query}"
+      rows: '#content .home_list_entry'
+      magnet:
+        query: ".links > a[href^='magnet:']"
+        attribute: href
+      title:
+        query: '.link > a'
+      size:
+        query: '.size'
+      sl:
+        combined: ".links > span[title^='Seeders']"
+        attribute: title
+        seederRegex: 'Seeders:\s?(\d+)'
+        leecherRegex: 'Leechers:\s?(\d+)'
+
+  - name: SolidTorrents
+    version: 2
+    minVersion: '0.6.4'
+    about: Comprehensive torrent search via Bitsearch/SolidTorrents API.
+    website: https://bitsearch.eu
+    tags:
+      - name: Reliable
+        color: '34c759'
+      - name: General
     jsonParser:
       searchUrl: "/api/v1/search?q={query}&limit=100&sort=seeders"
       results: results
@@ -114,6 +93,8 @@ sources:
       sl:
         seeders: seeders
         leechers: leechers
+      date:
+        query: updatedAt
 
   - name: Torrents CSV
     version: 1
@@ -123,6 +104,7 @@ sources:
     tags:
       - name: Fast
         color: '34c759'
+      - name: General
     jsonParser:
       searchUrl: "/service/search?q={query}"
       results: torrents
@@ -135,27 +117,83 @@ sources:
       sl:
         seeders: seeders
         leechers: leechers
+      date:
+        query: created_unix
 
-  - name: Knaben
+  - name: TheRARBG
     version: 1
     minVersion: '0.6.4'
-    about: Knaben torrent search via HTML parsing.
-    website: https://knaben.net
+    about: Fast torrent search via TheRARBG JSON API.
+    website: https://therarbg.to
     tags:
+      - name: Reliable
+        color: '34c759'
       - name: General
-    htmlParser:
-      searchUrl: "/search/{query}"
-      rows: 'table.table-striped tbody tr'
-      magnet:
-        query: "a[href^='magnet']"
-        attribute: href
+    jsonParser:
+      searchUrl: "/get-posts/keywords:{query}:format:json/?page=1"
+      results: results
+      magnetHash:
+        query: h
       title:
-        query: .title a
+        query: n
       size:
-        query: 'td:nth-child(3)'
+        query: s
       sl:
-        seeders: 'td:nth-child(4)'
-        leechers: 'td:nth-child(5)'
+        seeders: se
+        leechers: le
+      date:
+        query: a
+
+  - name: The Pirate Bay
+    version: 1
+    minVersion: '0.6.4'
+    about: Classic torrent search via The Pirate Bay API.
+    website: https://thepiratebay.org
+    tags:
+      - name: Public
+        color: 'ff9500'
+    api:
+      apiUrl: https://apibay.org
+    jsonParser:
+      searchUrl: "/q.php?q={query}"
+      magnetHash:
+        query: info_hash
+      title:
+        query: name
+      size:
+        query: size
+      sl:
+        seeders: seeders
+        leechers: leechers
+      date:
+        query: added
+
+  - name: YTS
+    version: 2
+    minVersion: '0.6.4'
+    about: Movie-focused torrent search via YTS API.
+    website: https://yts.lt
+    tags:
+      - name: Movies
+        color: '32ade6'
+    api:
+      apiUrl: https://movies-api.accel.li
+    jsonParser:
+      searchUrl: "/api/v2/list_movies.json?query_term={query}&limit=50"
+      results: data.movies
+      subResults: torrents
+      magnetHash:
+        query: hash
+      title:
+        query: title_long
+        discriminator: quality
+      size:
+        query: size_bytes
+      sl:
+        seeders: seeds
+        leechers: peers
+      date:
+        query: date_uploaded_unix
 
 actions:
   - name: Open in Outplayer

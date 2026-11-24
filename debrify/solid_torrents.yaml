@@ -1,5 +1,5 @@
-# SolidTorrents Search Engine Configuration
-# Comprehensive torrent search via SolidTorrents API
+# SolidTorrents / Bitsearch Search Engine Configuration
+# Comprehensive torrent search via Bitsearch/SolidTorrents API
 
 id: solid_torrents
 display_name: "SolidTorrents"
@@ -11,12 +11,18 @@ capabilities:
   imdb_search: true
   series_support: false
 
-# API endpoint (includes limit and sort params directly in URL)
-# Note: IMDB search uses keyword URL - searches for IMDB ID in torrent names
+# API endpoint (solidtorrents.to redirects to bitsearch.eu)
 api:
   urls:
-    keyword: "https://r.jina.ai/https://solidtorrents.to/api/v1/search?limit=100&sort=seeders"
-    imdb: "https://r.jina.ai/https://solidtorrents.to/api/v1/search?limit=100&sort=seeders"
+    keyword: "https://bitsearch.eu/api/v1/search?limit=100&sort=seeders"
+    imdb: "https://bitsearch.eu/api/v1/search?limit=100&sort=seeders"
+  fallback_urls:
+    keyword:
+      - "https://solidtorrents.to/api/v1/search?limit=100&sort=seeders"
+      - "https://r.jina.ai/https://bitsearch.eu/api/v1/search?limit=100&sort=seeders"
+    imdb:
+      - "https://solidtorrents.to/api/v1/search?limit=100&sort=seeders"
+      - "https://r.jina.ai/https://bitsearch.eu/api/v1/search?limit=100&sort=seeders"
 
 # Query parameters
 query_params:
@@ -32,9 +38,9 @@ pagination:
   page_param: "page"
   has_more_field: "pagination.hasNext"
 
-# Response format - jina wrapped
+# Response format - direct JSON (still unwraps Jina automatically on fallback)
 response_format:
-  type: jina_wrapped
+  type: direct_json
   extract_json: true
   results_path: "results"
 
@@ -48,7 +54,7 @@ field_mappings:
   infohash:
     source: "infohash"
     type: direct
-    conversion: uppercase
+    conversion: lowercase
   name:
     source: "title"
     type: direct
@@ -60,6 +66,9 @@ field_mappings:
     type: direct
   leechers:
     source: "leechers"
+    type: direct
+  created_unix:
+    source: "updatedAt"
     type: direct
   category:
     type: template
@@ -85,6 +94,6 @@ tv_mode:
     large: 100
     quick_play: 200
 
-# Request override - longer timeout needed
+# Request override
 request:
   timeout_seconds: 15

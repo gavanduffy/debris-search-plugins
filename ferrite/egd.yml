@@ -24,12 +24,14 @@ sources:
       sl:
         seeders: seeders
         leechers: leechers
+      date:
+        query: added
 
   - name: SolidTorrents
-    version: 1
+    version: 2
     minVersion: '0.6.4'
-    about: Comprehensive torrent search via SolidTorrents API.
-    website: https://solidtorrents.to
+    about: Comprehensive torrent search via Bitsearch/SolidTorrents API.
+    website: https://bitsearch.eu
     tags:
       - name: Reliable
         color: '34c759'
@@ -46,6 +48,8 @@ sources:
       sl:
         seeders: seeders
         leechers: leechers
+      date:
+        query: updatedAt
 
   - name: Torrents CSV
     version: 1
@@ -68,17 +72,21 @@ sources:
       sl:
         seeders: seeders
         leechers: leechers
+      date:
+        query: created_unix
 
   - name: YTS
-    version: 1
+    version: 2
     minVersion: '0.6.4'
-    about: Movie-focused torrent search.
-    website: https://yts.mx
+    about: Movie-focused torrent search via YTS API.
+    website: https://yts.lt
     tags:
       - name: Movies
         color: '32ade6'
+    api:
+      apiUrl: https://movies-api.accel.li
     jsonParser:
-      searchUrl: "/api/v2/list_movies.json?query_term={query}"
+      searchUrl: "/api/v2/list_movies.json?query_term={query}&limit=50"
       results: data.movies
       subResults: torrents
       magnetHash:
@@ -91,24 +99,26 @@ sources:
       sl:
         seeders: seeds
         leechers: peers
+      date:
+        query: date_uploaded_unix
 
   - name: Knaben
-    version: 1
+    version: 2
     minVersion: '0.6.4'
     about: Knaben torrent search via HTML parsing.
-    website: https://knaben.net
+    website: https://knaben.org
     tags:
       - name: General
     htmlParser:
-      searchUrl: "/search/{query}"
+      searchUrl: "/search/{query}/0/1/seeders"
       rows: "table.table-striped tbody tr"
       magnet:
-        query: "a[href^='magnet']"
+        query: "a[href^='magnet:']"
         attribute: href
       title:
-        query: .title a
+        query: "td:nth-child(2) > a"
       size:
         query: "td:nth-child(3)"
       sl:
-        seeders: "td:nth-child(4)"
-        leechers: "td:nth-child(5)"
+        seeders: "td:nth-child(5)"
+        leechers: "td:nth-child(6)"
